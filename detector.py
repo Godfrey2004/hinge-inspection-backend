@@ -32,8 +32,7 @@ class HingeDetector:
             
         # Use mp4v codec — will be converted to H.264 after processing
         fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # type: ignore[attr-defined]
-        output_fps = max(fps // 2, 10)  # 0.5x slow-motion (minimum 10fps)
-        out = cv2.VideoWriter(output_path, fourcc, output_fps, (width, height))
+        out = cv2.VideoWriter(output_path, fourcc, fps, (width, height))
 
         # Overall analytics state
         left_hinge_detected = False
@@ -53,10 +52,10 @@ class HingeDetector:
         # ── Speed optimisation ────────────────────────────────────────────
         # Process only 1 in every FRAME_SKIP frames through YOLO.
         # Skipped frames still get the HUD drawn using the cached detections.
-        FRAME_SKIP = 3          # was 5 — more frames processed = better accuracy
+        FRAME_SKIP = 5
         frame_idx = 0
-        # Inference at a larger size is more accurate (was 320)
-        INFER_SIZE = 416
+        # Inference size — balanced speed vs accuracy
+        INFER_SIZE = 320
         # Minimum confidence to accept a detection (filters weak false positives)
         CONF_THRESHOLD = 0.30
         # Camera offset calibration: hinges appear in center-right of frame, split at 65%
