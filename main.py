@@ -51,7 +51,7 @@ async def upload_video(file: UploadFile = File(...)):
     Returns the analytics JSON response.
     """
     # Validate extension
-    if not file.filename.lower().endswith(('.mp4', '.avi', '.mov')):
+    if not file.filename or not file.filename.lower().endswith(('.mp4', '.avi', '.mov')):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invalid file format. Only .mp4, .avi, and .mov are allowed."
