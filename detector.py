@@ -56,8 +56,8 @@ class HingeDetector:
         frame_idx = 0
         # Inference at a smaller size is much faster on CPU (imgsz=320 vs 640)
         INFER_SIZE = 320
-        # Camera offset calibration: the gap between hinges is at ~62% of the frame width
-        SPLIT_RATIO = 0.62
+        # Camera offset calibration: the gap between hinges is at 50% of the frame width
+        SPLIT_RATIO = 0.50
         # ──────────────────────────────────────────────────────────────────
 
         while True:
