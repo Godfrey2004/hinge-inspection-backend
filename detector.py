@@ -30,9 +30,10 @@ class HingeDetector:
         if fps == 0:
             fps = 30
             
-        # Use mp4v codec for standard .mp4 output (Pyright false positive — exists at runtime)
+        # Use mp4v codec — will be converted to H.264 after processing
         fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # type: ignore[attr-defined]
-        out = cv2.VideoWriter(output_path, fourcc, fps, (width, height))
+        output_fps = max(fps // 2, 10)  # 0.5x slow-motion (minimum 10fps)
+        out = cv2.VideoWriter(output_path, fourcc, output_fps, (width, height))
 
         # Overall analytics state
         left_hinge_detected = False
@@ -52,12 +53,14 @@ class HingeDetector:
         # ── Speed optimisation ────────────────────────────────────────────
         # Process only 1 in every FRAME_SKIP frames through YOLO.
         # Skipped frames still get the HUD drawn using the cached detections.
-        FRAME_SKIP = 5
+        FRAME_SKIP = 3          # was 5 — more frames processed = better accuracy
         frame_idx = 0
-        # Inference at a smaller size is much faster on CPU (imgsz=320 vs 640)
-        INFER_SIZE = 320
-        # Camera offset calibration: hinges appear in center-right of frame, split at 62%
-        SPLIT_RATIO = 0.62
+        # Inference at a larger size is more accurate (was 320)
+        INFER_SIZE = 416
+        # Minimum confidence to accept a detection (filters weak false positives)
+        CONF_THRESHOLD = 0.30
+        # Camera offset calibration: hinges appear in center-right of frame, split at 65%
+        SPLIT_RATIO = 0.65
         # ──────────────────────────────────────────────────────────────────
 
         while True:
@@ -77,6 +80,10 @@ class HingeDetector:
                     for box in result.boxes:
                         x1, y1, x2, y2 = map(int, box.xyxy[0])
                         conf = float(box.conf[0])
+
+                        # Skip low-confidence detections
+                        if conf < CONF_THRESHOLD:
+                            continue
 
                         if conf > overall_max_conf:
                             overall_max_conf = conf
