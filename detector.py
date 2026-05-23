@@ -30,8 +30,8 @@ class HingeDetector:
         if fps == 0:
             fps = 30
             
-        # Use mp4v codec for standard .mp4 output
-        fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+        # Use mp4v codec for standard .mp4 output (Pyright false positive — exists at runtime)
+        fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # type: ignore[attr-defined]
         out = cv2.VideoWriter(output_path, fourcc, fps, (width, height))
 
         # Overall analytics state
@@ -56,8 +56,8 @@ class HingeDetector:
         frame_idx = 0
         # Inference at a smaller size is much faster on CPU (imgsz=320 vs 640)
         INFER_SIZE = 320
-        # Camera offset calibration: the gap between hinges is at 50% of the frame width
-        SPLIT_RATIO = 0.50
+        # Camera offset calibration: hinges appear in center-right of frame, split at 62%
+        SPLIT_RATIO = 0.62
         # ──────────────────────────────────────────────────────────────────
 
         while True:
