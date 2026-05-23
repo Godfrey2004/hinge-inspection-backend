@@ -145,21 +145,28 @@ class HingeDetector:
         out.release()
         
         # --- Convert video to Web-safe H.264 using FFmpeg ---
+        converted = False
         try:
             import imageio_ffmpeg
             import subprocess
             import shutil
             ffmpeg_path = imageio_ffmpeg.get_ffmpeg_exe()
             temp_output = output_path.replace(".mp4", "_temp.mp4")
-            shutil.move(output_path, temp_output)
-            subprocess.run([
-                ffmpeg_path, "-y", "-i", temp_output, 
-                "-vcodec", "libx264", "-f", "mp4", output_path
+            shutil.copy2(output_path, temp_output)  # copy, not move — keeps original safe
+            result = subprocess.run([
+                ffmpeg_path, "-y", "-i", temp_output,
+                "-vcodec", "libx264", "-acodec", "aac",
+                "-pix_fmt", "yuv420p",  # required for browser compatibility
+                "-movflags", "+faststart",  # enables streaming
+                output_path
             ], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
             os.remove(temp_output)
+            converted = True
+            print("H.264 conversion successful.")
         except Exception as e:
-            print(f"FFmpeg conversion failed: {e}")
-        # ----------------------------------------------------
+            print(f"FFmpeg H.264 conversion failed: {e} — serving original mp4v file.")
+            # Original output_path (mp4v) still exists and will be served
+        # -----------------------------------------------------------------
 
         
         # Calculate final analytics based on the entire video
