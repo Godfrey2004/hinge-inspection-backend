@@ -18,7 +18,11 @@ app = FastAPI(
 # CORS Middleware Configuration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Open for development; restrict in production
+    allow_origins=[
+        "https://hinge-inspection-frontend.vercel.app",
+        "https://hinge-inspection-frontend-grryc3foq-godfrey-j-projects8.vercel.app",
+        "http://localhost:5173",  # Local dev
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
