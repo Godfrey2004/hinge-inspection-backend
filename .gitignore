@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# Uploaded & processed videos (runtime data)
+uploads/
+outputs/
+processed/
+
+# Test video files
+*.mp4
+*.avi
+*.mov
+*.mkv
+*.webm
+
+# Model weights (too large for GitHub - upload separately)
+# best.pt
+
+# IDE
+.vscode/
+*.egg-info/
+
+# OS
+.DS_Store
+Thumbs.db
